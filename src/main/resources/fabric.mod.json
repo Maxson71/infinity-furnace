@@ -1,0 +1,44 @@
+{
+	"schemaVersion": 1,
+	"id": "infinityfurnace",
+	"version": "${version}",
+	"name": "Infinity Furnace",
+	"description": "Unleash the ultimate smelting power with the Infinite Furnace Mod for Minecraft! This mod introduces the Infinite Furnace, a unique furnace crafted from the Netherrack.\nFeatures:\nInfinite Smelting: No need to worry about fuel anymore. Infinite Furnace smelts items endlessly without consuming any fuel.\nBalanced Smelting Speed: To maintain game balance, Infinite Furnace smelts items at a slower rate compared to regular furnaces.\nUpgrade your smelting game and make your Minecraft adventures more efficient with the Infinite Infinite Furnace!",
+	"authors": [
+		"Maxson__"
+	],
+	"contact": {
+		"homepage": "https://github.com/Maxson71/infinity-furnace",
+		"sources": "https://github.com/Maxson71/infinity-furnace"
+	},
+	"license": "MIT",
+	"icon": "assets/infinityfurnace/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.maxson.infinityfurnace.InfinityFurnace"
+		],
+		"client": [
+			"com.maxson.infinityfurnace.InfinityFurnaceClient"
+		],
+		"fabric-datagen": [
+			"com.maxson.infinityfurnace.InfinityFurnaceDataGenerator"
+		]
+	},
+	"mixins": [
+		"infinityfurnace.mixins.json",
+		{
+			"config": "infinityfurnace.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.15.11",
+		"minecraft": "~1.21",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
