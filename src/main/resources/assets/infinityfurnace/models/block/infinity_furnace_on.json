@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "infinityfurnace:block/infinity_furnace_front_on",
+    "side": "infinityfurnace:block/infinity_furnace_side",
+    "top": "infinityfurnace:block/infinity_furnace_top",
+    "bottom": "infinityfurnace:block/infinity_furnace_bottom"
+  }
+}

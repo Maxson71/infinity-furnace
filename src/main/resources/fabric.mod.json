@@ -11,7 +11,7 @@
 		"homepage": "https://github.com/Maxson71/infinity-furnace",
 		"sources": "https://github.com/Maxson71/infinity-furnace"
 	},
-	"license": "MIT",
+	"license": "MIT-license",
 	"icon": "assets/infinityfurnace/icon.png",
 	"environment": "*",
 	"entrypoints": {
