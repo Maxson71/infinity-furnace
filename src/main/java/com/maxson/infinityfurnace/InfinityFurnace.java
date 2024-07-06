@@ -13,6 +13,7 @@ public class InfinityFurnace implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+
 		ModBlocks.registerModBlocks();
 		ModBlockEntity.registerBlockEntities();
 	}

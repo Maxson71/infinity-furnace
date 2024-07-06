@@ -17,7 +17,7 @@ public class InfinityFurnaceEntity extends AbstractFurnaceBlockEntity {
 
     @Override
     protected Text getContainerName() {
-        return Text.translatable("container.furnace");
+        return Text.translatable("container.infinityfurnace.infinity_furnace");
     }
 
     @Override

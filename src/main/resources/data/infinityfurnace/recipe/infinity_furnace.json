@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "CCC",
-    "C C",
-    "NNN"
-  ],
   "key": {
     "C": {
       "item": "minecraft:cobblestone"
@@ -14,8 +9,13 @@
       "item": "minecraft:netherrack"
     }
   },
+  "pattern": [
+    "CCC",
+    "C C",
+    "NNN"
+  ],
   "result": {
-    "item": "infinity_furnace:infinity_furnace"
-  },
-  "show_notification": true
+    "count": 1,
+    "id": "infinityfurnace:infinity_furnace"
+  }
 }
