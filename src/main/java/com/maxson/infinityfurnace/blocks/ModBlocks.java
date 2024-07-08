@@ -15,12 +15,12 @@ import static net.minecraft.block.Blocks.createLightLevelFromLitBlockState;
 
 public class ModBlocks {
     public static final Block INFINITY_FURNACE = registerBlock("infinity_furnace",
-            new BlastFurnaceBlock(
+            new FurnaceBlock(
                     AbstractBlock.Settings.create()
                             .mapColor(MapColor.STONE_GRAY)
                             .instrument(NoteBlockInstrument.BASEDRUM)
                             .requiresTool()
-                            .strength(3.5F)
+                            .strength(1.5F)
                             .luminance(createLightLevelFromLitBlockState(13))
             ));
 
