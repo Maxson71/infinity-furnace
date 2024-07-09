@@ -3,19 +3,15 @@ package com.maxson.infinityfurnace.blocks.entity;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -24,8 +20,6 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public class InfinityFurnaceEntity extends BlockEntity implements ExtendedScreenHandlerFactory, ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(2, ItemStack.EMPTY);
@@ -36,6 +30,8 @@ public class InfinityFurnaceEntity extends BlockEntity implements ExtendedScreen
     protected final PropertyDelegate propertyDelegate;
     private int progress = 0;
     private int maxProgress = 72;
+
+
 
     public InfinityFurnaceEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.INFINITY_FURNACE_ENTITY, pos, state);
@@ -54,7 +50,9 @@ public class InfinityFurnaceEntity extends BlockEntity implements ExtendedScreen
                 switch (index) {
                     case 0 -> InfinityFurnaceEntity.this.progress = value;
                     case 1 -> InfinityFurnaceEntity.this.maxProgress = value;
-                }
+                    default -> {
+                    }
+                };
             }
 
             @Override
@@ -64,20 +62,6 @@ public class InfinityFurnaceEntity extends BlockEntity implements ExtendedScreen
         };
     }
 
-    public ItemStack getRenderStack() {
-        if(this.getStack(OUTPUT_SLOT).isEmpty()) {
-            return this.getStack(INPUT_SLOT);
-        } else {
-            return this.getStack(OUTPUT_SLOT);
-        }
-    }
-
-    @Override
-    public void markDirty() {
-        world.updateListeners(pos, getCachedState(), getCachedState(), 3);
-        super.markDirty();
-    }
-
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
         buf.writeBlockPos(this.pos);
@@ -85,32 +69,37 @@ public class InfinityFurnaceEntity extends BlockEntity implements ExtendedScreen
 
     @Override
     public Text getDisplayName() {
-        return Text.literal("Infinity Furnace");
+        return Text.translatable("container.infinityfurnace.infinity_furnace");
     }
 
     @Override
     public DefaultedList<ItemStack> getItems() {
         return inventory;
     }
-
     @Override
-    protected void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
-        Inventories.writeNbt(nbt, inventory);
-        nbt.putInt("gem_polishing_station.progress", progress);
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
+        Inventories.writeNbt(nbt, this.inventory, registryLookup);
+        nbt.putInt("infinity_furnace.progress", progress);
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
-        Inventories.readNbt(nbt, inventory);
-        progress = nbt.getInt("gem_polishing_station.progress");
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
+        Inventories.readNbt(nbt, this.inventory, registryLookup);
+        progress = nbt.getInt("infinity_furnace.progress");
     }
+
 
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        return new InfinityFurnaceScreenHandler(syncId, playerInventory, this, this.propertyDelegate);
+        return null;
+    }
+
+    @Override
+    public Object getScreenOpeningData(ServerPlayerEntity player) {
+        return null;
     }
 
     public void tick(World world, BlockPos pos, BlockState state) {
@@ -134,19 +123,18 @@ public class InfinityFurnaceEntity extends BlockEntity implements ExtendedScreen
             this.resetProgress();
             markDirty(world, pos, state);
         }
+
+    }
+
+    private void craftItem() {
+        this.removeStack(INPUT_SLOT, 1);
+        ItemStack result = new ItemStack(Items.DIAMOND, 1);
+
+        this.setStack(OUTPUT_SLOT, new ItemStack(result.getItem(), getStack(OUTPUT_SLOT).getCount() + result.getCount()));
     }
 
     private void resetProgress() {
         this.progress = 0;
-    }
-
-    private void craftItem() {
-        Optional<RecipeEntry<>> recipe = getCurrentRecipe();
-
-        this.removeStack(INPUT_SLOT, 1);
-
-        this.setStack(OUTPUT_SLOT, new ItemStack(recipe.get().value().getResult(null).getItem(),
-                getStack(OUTPUT_SLOT).getCount() + recipe.get().value().getResult(null).getCount()));
     }
 
     private boolean hasCraftingFinished() {
@@ -158,19 +146,10 @@ public class InfinityFurnaceEntity extends BlockEntity implements ExtendedScreen
     }
 
     private boolean hasRecipe() {
-        Optional<RecipeEntry<GemPolishingRecipe>> recipe = getCurrentRecipe();
+        ItemStack result = new ItemStack(Items.DIAMOND, 1);
+        boolean hasInput = this.getStack(INPUT_SLOT).getItem() == Items.COAL;
 
-        return recipe.isPresent() && canInsertAmountIntoOutputSlot(recipe.get().value().getResult(null))
-                && canInsertItemIntoOutputSlot(recipe.get().value().getResult(null).getItem());
-    }
-
-    private Optional<RecipeEntry<GemPolishingRecipe>> getCurrentRecipe() {
-        SimpleInventory inv = new SimpleInventory(this.size());
-        for(int i = 0; i < this.size(); i++) {
-            inv.setStack(i, this.getStack(i));
-        }
-
-        return getWorld().getRecipeManager().getFirstMatch(GemPolishingRecipe.Type.INSTANCE, inv, getWorld());
+        return hasInput && canInsertAmountIntoOutputSlot(result) && canInsertItemIntoOutputSlot(result.getItem());
     }
 
     private boolean canInsertItemIntoOutputSlot(Item item) {
@@ -183,16 +162,5 @@ public class InfinityFurnaceEntity extends BlockEntity implements ExtendedScreen
 
     private boolean isOutputSlotEmptyOrReceivable() {
         return this.getStack(OUTPUT_SLOT).isEmpty() || this.getStack(OUTPUT_SLOT).getCount() < this.getStack(OUTPUT_SLOT).getMaxCount();
-    }
-
-    @Nullable
-    @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
-    }
-
-    @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
     }
 }
