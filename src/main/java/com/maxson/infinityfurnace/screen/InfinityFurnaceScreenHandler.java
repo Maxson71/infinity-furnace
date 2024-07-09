@@ -1,5 +1,6 @@
 package com.maxson.infinityfurnace.screen;
 
+import com.maxson.infinityfurnace.blocks.entity.InfinityFurnaceEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -12,10 +13,11 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 
 
-public class InfinityFurnaceScreenHendler extends ScreenHandler {
+public class InfinityFurnaceScreenHandler extends ScreenHandler {
 
     private final Inventory inventory;
     private final PropertyDelegate propertyDelegate;
+    public final InfinityFurnaceEntity blockEntity;
 
 
     public InfinityFurnaceScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf buf) {
@@ -34,7 +36,7 @@ public class InfinityFurnaceScreenHendler extends ScreenHandler {
         this.inventory = ((Inventory) blockEntity);
         inventory.onOpen(playerInventory.player);
         this.propertyDelegate = arrayPropertyDelegate;
-        this.blockEntity = (() blockEntity);
+        this.blockEntity = ((InfinityFurnaceEntity) blockEntity);
 
         this.addSlot(new Slot(inventory, 0, 80, 11));
         this.addSlot(new Slot(inventory, 1, 80, 59));

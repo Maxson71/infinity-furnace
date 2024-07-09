@@ -1,8 +1,8 @@
 package com.maxson.infinityfurnace.screen;
 
 import com.maxson.infinityfurnace.InfinityFurnace;
+
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.util.Identifier;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;

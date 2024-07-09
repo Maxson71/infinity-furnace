@@ -2,6 +2,7 @@ package com.maxson.infinityfurnace;
 
 import com.maxson.infinityfurnace.blocks.ModBlocks;
 import com.maxson.infinityfurnace.blocks.entity.ModBlockEntities;
+import com.maxson.infinityfurnace.screen.ModScreenHandlers;
 import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;
@@ -16,5 +17,6 @@ public class InfinityFurnace implements ModInitializer {
 
 		ModBlocks.registerModBlocks();
 		ModBlockEntities.registerBlockEntities();
+		ModScreenHandlers.registerScreenHandlers();
 	}
 }
